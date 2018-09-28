@@ -13,6 +13,9 @@ var database = firebase.database();
 var currTime = new Date();
 var format = dateFns.format
 
+// console.log(format(currTime))
+console.log(currTime)
+
 var trainData = {
     tName: '',
     tDest: '',
@@ -28,8 +31,8 @@ $("#submit").on("click", function () {
     trainData.tDest = $('#tDest').val();
 
     var firstTrain = $('#firstTrain').val();
-    trainData.timeString = format(new Date(firstTrain), 'hh:mm');
-    var firstTrainConverted = format(dateFns.subYears(firstTrain, 1), 'hh:mm');
+    trainData.timeString = format(new Date(firstTrain), 'HH:mm');
+    var firstTrainConverted = format(dateFns.subYears(firstTrain, 1), 'HH:mm');
     console.log(firstTrainConverted);
 
     // Difference between the times
