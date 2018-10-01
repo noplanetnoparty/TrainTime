@@ -11,10 +11,14 @@ firebase.initializeApp(config);
 var database = firebase.database();
 
 var currTime = new Date();
+// var currTime = dateFns.getTime;
+
+// currTime('HH:mm');
+
 var format = dateFns.format
 
 // console.log(format(currTime))
-console.log(currTime)
+// console.log(currTime)
 
 var trainData = {
     tName: '',
@@ -30,9 +34,9 @@ $("#submit").on("click", function () {
     trainData.tName = $('#tName').val();
     trainData.tDest = $('#tDest').val();
 
-    var firstTrain = $('#firstTrain').val();
-    trainData.timeString = format(new Date(firstTrain), 'HH:mm');
-    var firstTrainConverted = format(dateFns.subYears(firstTrain, 1), 'HH:mm');
+    var firstTrain = $('#firstTrain').val().trim();
+    trainData.timeString = format(new Date(firstTrain), ['HHmm']);
+    var firstTrainConverted = format(dateFns.subYears(firstTrain, 1), ['HHmm']);
     console.log(firstTrainConverted);
 
     // Difference between the times
@@ -45,7 +49,7 @@ $("#submit").on("click", function () {
 
     // Minute Until Train
     var tMinsTilTrain = tFreq - tApart;
-    console.log("MINUTES TILL TRAIN: " + tMinsTilTrain);
+    console.log("MINUTES TIL TRAIN: " + tMinsTilTrain);
 
 
     trainData.tFreq = $('#tFreq').val();
@@ -54,6 +58,7 @@ $("#submit").on("click", function () {
 })
 
 database.ref().on("child_added", function (childSnapshot) {
-    $('#tableContents').append('<tr>' + '<td>' + childSnapshot.val().tName + '<td>' + childSnapshot.val().tDest + '<td>' + childSnapshot.val().timeString + '<td>' + childSnapshot.val().tFreq + '<td>' + childSnapshot.val().tMinTilTrain)
-
+    $('#tableContents').append('<tr>' + '<td>' + childSnapshot.val().tName + '<td>' + childSnapshot.val().tDest + '<td>' + childSnapshot.val().tFreq + '<td>' + childSnapshot.val().timeString + '<td>' + childSnapshot.val().tMinTilTrain)
 })
+
+// 'NEXT ARRIVAL' = timeString

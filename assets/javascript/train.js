@@ -10,8 +10,24 @@ firebase.initializeApp(config);
 
 var database = firebase.database();
 
+
+$("#submit").on("click", function () {
+    event.preventDefault();
+
+    trainData.tName = $('#tName').val();
+    trainData.tDest = $('#tDest').val();
+    trainData.firstTime = $('#firstTime').val();
+    // var firstTime = $('#firstTime').val();
+
+    trainData.tFreq = $('#tFreq').val();
+
+    console.log(trainData.tName);
+
+    database.ref().push(trainData)
+})
+
 var currTime = new Date();
-var format = dateFns.format
+var format = dateFns.format;
 
 var trainData = {
     tName: '',
@@ -19,49 +35,97 @@ var trainData = {
     tFreq: 0,
     timeString: '',
     currTime: '',
-    firstTrain: '',
+    firstTime: '',
     nextTrain: ''
 };
 
-$("#submit").on("click", function () {
-    trainData.tName = $('#tName').val();
-    trainData.tDest = $('#tDest').val();
-
-    var firstTime = $('#firstTrain').val();
-    trainData.timeString = format(new Date(firstTime), 'hh:mm');
-    
-    trainData.tFreq = $('#tFreq').val();
-
-    database.ref().push(trainData)
-})
-
 database.ref().on("child_added", function (childSnapshot) {
-    $('#tableContents').append('<tr>' + '<td>' + childSnapshot.val().tName + '<td>' + childSnapshot.val().tDest + '<td>' + childSnapshot.val().timeString + '<td>' + childSnapshot.val().tFrequency + '<td>' + childSnapshot.val().tMinutesTillTrain)
+
+    var trainData = {
+        tName: '',
+        tDest: '',
+        tFreq: 0,
+        timeString: '',
+        currTime: '',
+        firstTime: '',
+        nextTrain: ''
+    };
+
+    var timeString = childSnapshot.val().firstTime;
+
+    var tArrival = timeString.split(':');
+    var finalFirstTrain = currTime.setHours(tArrival[0]);
+    var superFirstTrain = currTime.setMinutes(tArrival[1]);
+    // firstTime.split(':')
+    console.log(finalFirstTrain);
+
+
+    // trainData.timeString = format(new Date(firstTime), 'HH:mm');
+
+
+    // console.log(format(firstTime, 'HHmm'))
+    // First Time (pushed back 1 year to make sure it comes before current time)
+    // var firstTimeConverted = format(dateFns.subYears(firstTime, 1), 'HHmm');
+    // console.log(firstTimeConverted);
+
+    // Current Time
+    // var currentTime = new Date();
+    // console.log("CURRENT TIME: " + format(currentTime, "HHmm"));
+
+    // Difference between the times
+    var diffTime = dateFns.differenceInMinutes(new Date(), dateFns.subYears(tArrival, 1));
+    console.log("DIFFERENCE IN TIME: " + diffTime);
+
+    // Time apart (remainder)
+    var tRemainder = diffTime % tFreq;
+    console.log(tRemainder);
+
+    // Minute Until Train
+    var tMinutesTillTrain = tFreq - tRemainder;
+    console.log("MINUTES TILL TRAIN: " + tMinutesTillTrain);
+
+    // Next Train
+    var nextTrain = dateFns.addMinutes(new Date(), tMinutesTillTrain);
+    console.log("ARRIVAL TIME: " + format(nextTrain, "HHmm"));
+
+    $('#tableContents').append('<tr>' + '<td>' + childSnapshot.val().tName + '<td>' + childSnapshot.val().tDest + '<td>' + childSnapshot.val().tFreq + '<td>' + childSnapshot.val().nextTrain + '<td>' + childSnapshot.val().tMinutesTillTrain)
 
 })
 
+// console.log(childSnapshot.val());
+// console.log(trainData);
 
-console.log(format(firstTime, 'HH:mm'))
-// First Time (pushed back 1 year to make sure it comes before current time)
-var firstTimeConverted = format(dateFns.subYears(firstTime, 1), 'HH:mm');
-console.log(firstTimeConverted);
+// var firstTime = childSnapshot.val().firstTime;
 
-// Current Time
-var currentTime = new Date();
-console.log("CURRENT TIME: " + format(currentTime, "hh:mm"));
+// var tArrival = firstTime.spilt(':');
+// var finalFirstTrain = format.setHours(firstTime[0]).setMinutes(firstTime[1]);
+// // firstTime.split(':')
 
-// Difference between the times
-var diffTime = dateFns.differenceInMinutes(new Date(), dateFns.subYears(firstTime, 1));
-console.log("DIFFERENCE IN TIME: " + diffTime);
 
-// Time apart (remainder)
-var tRemainder = diffTime % tFrequency;
-console.log(tRemainder);
+// trainData.timeString = format(new Date(firstTime), 'HH:mm');
 
-// Minute Until Train
-var tMinutesTillTrain = tFrequency - tRemainder;
-console.log("MINUTES TILL TRAIN: " + tMinutesTillTrain);
 
-// Next Train
-var nextTrain = dateFns.addMinutes(new Date(), tMinutesTillTrain);
-console.log("ARRIVAL TIME: " + format(nextTrain, "hh:mm"));
+// console.log(format(firstTime, 'HHmm'))
+// // First Time (pushed back 1 year to make sure it comes before current time)
+// var firstTimeConverted = format(dateFns.subYears(firstTime, 1), 'HHmm');
+// console.log(firstTimeConverted);
+
+// // Current Time
+// var currentTime = new Date();
+// console.log("CURRENT TIME: " + format(currentTime, "HHmm"));
+
+// // Difference between the times
+// var diffTime = dateFns.differenceInMinutes(new Date(), dateFns.subYears(firstTime, 1));
+// console.log("DIFFERENCE IN TIME: " + diffTime);
+
+// // Time apart (remainder)
+// var tRemainder = diffTime % tFreq;
+// console.log(tRemainder);
+
+// // Minute Until Train
+// var tMinutesTillTrain = tFreq - tRemainder;
+// console.log("MINUTES TILL TRAIN: " + tMinutesTillTrain);
+
+// // Next Train
+// var nextTrain = dateFns.addMinutes(new Date(), tMinutesTillTrain);
+// console.log("ARRIVAL TIME: " + format(nextTrain, "HHmm"));

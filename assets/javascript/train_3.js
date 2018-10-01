@@ -36,19 +36,19 @@ $("#submit").on("click", function () {
     database.ref().push(trainData)
 })
 
+// database.ref().on("child_added", function(childSnapshot){
+//     $("#tableContents").append()
+// })
 
-database.ref().on("child_added", function (snapshot) {
+database.ref().on("child_added", function (childSnapshot) {
+    $('#tableContents').append('<tr>' + '<td>' + childSnapshot.val().tName + '<td>' + childSnapshot.val().tDest + '<td>' + childSnapshot.val().tFreq + '<td>' + childSnapshot.val().timeString + '<td>' + childSnapshot.val().tMinTilTrain)
+})
 
-    // snapshot values
-    var sv = snapshot.val()
+var hour = startTime.split(':')[0]
+var min = startTime.split(':')[1]
 
-    //Get hours and minutes separatly from the firstTime
-    var hour = sv.startTime.split(':')[0]
-    var min = sv.startTime.split(':')[1]
+//Add hours and minutes to today's date
+var currTime = dateFns.setHours(new Date(), hour);
+currTime = dateFns.setMinutes(currTime, min);
 
-    //Add hours and minutes to today's date
-    var currTime = dateFns.setHours(new Date(), hour);
-    currTime = dateFns.setMinutes(currTime, min);
-});
-
-console.log(trainData);
+console.log('timeString: ' + trainData)
